@@ -5,8 +5,9 @@ interface Props {
   name: string;
   label: string;
   type?: 'text' | 'email' | 'password' | 'number' | 'date';
+  isDisabled?: boolean;
 }
-const FormInput = ({ name, label, type }: Props) => {
+const FormInput = ({ name, label, type, isDisabled }: Props) => {
   const { control } = useFormContext();
   return (
     <Controller
@@ -21,7 +22,12 @@ const FormInput = ({ name, label, type }: Props) => {
           variant='outlined'
           error={!!error}
           helperText={error ? error.message : null}
-          sx={{}}
+          disabled={isDisabled}
+          InputLabelProps={{
+            style: {
+              color: '#252422',
+            },
+          }}
           {...field}
         />
       )}

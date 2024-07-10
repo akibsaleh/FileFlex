@@ -1,9 +1,15 @@
-export default function LogoIcon({ color = '#0A0A0A' }: { color?: string }) {
+export default function LogoIcon({
+  color = '#0A0A0A',
+  size = '32',
+}: {
+  color?: string;
+  size?: string;
+}) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
-      width='32'
-      height='32'
+      width={size}
+      height={size}
       fill='none'
       viewBox='0 0 50 50'
     >

@@ -1,4 +1,9 @@
 'use client';
+import registerAction from '@/actions/register.action';
+import FormInput from '@/components/auth/FormInput';
+import SocialLogin from '@/components/auth/SocialLogin';
+import TailLoaderIcon from '@/components/icons/TailLoaderIcon';
+import RegisterSchema from '@/schema/RegisterSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Box,
@@ -10,19 +15,30 @@ import {
   Typography,
 } from '@mui/material';
 import Link from 'next/link';
+import React from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import RegisterSchema from '../../schema/RegisterSchema';
-import FormInput from './FormInput';
-import SocialLogin from './SocialLogin';
 
 const RegisterForm = () => {
+  const [formRes, setFormRes] = React.useState<{
+    status: boolean;
+    message: string;
+  } | null>(null);
+  const [isPending, startTransition] = React.useTransition();
   const form = useForm<z.infer<typeof RegisterSchema>>({
     resolver: zodResolver(RegisterSchema),
   });
 
-  const handleOnSubmit = (values: z.infer<typeof RegisterSchema>) => {
-    console.log('values', values);
+  const handleOnSubmit = async (values: z.infer<typeof RegisterSchema>) => {
+    startTransition(async () => {
+      try {
+        const res = await registerAction(values);
+        setFormRes(res);
+      } catch (error) {
+        setFormRes({ status: false, message: 'Something went wrong' });
+        console.error(error);
+      }
+    });
   };
 
   return (
@@ -63,20 +79,43 @@ const RegisterForm = () => {
           gap={2}
           onSubmit={form.handleSubmit(handleOnSubmit)}
         >
-          <FormInput label='Name' name='name' type='text' />
-          <FormInput label='Email' name='email' type='email' />
-          <FormInput label='Password' name='password' type='password' />
+          <FormInput
+            label='Name'
+            name='name'
+            type='text'
+            isDisabled={isPending}
+          />
+          <FormInput
+            label='Email'
+            name='email'
+            type='email'
+            isDisabled={isPending}
+          />
+          <FormInput
+            label='Password'
+            name='password'
+            type='password'
+            isDisabled={isPending}
+          />
           <Button
             type='submit'
             variant='contained'
             color='primary'
             size='large'
+            disabled={isPending}
             sx={{ height: 48 }}
           >
-            Register
+            {isPending ? <TailLoaderIcon /> : 'Register'}
           </Button>
         </Stack>
       </FormProvider>
+      {formRes && (
+        <Chip
+          label={formRes?.message}
+          color={formRes.status ? 'success' : 'error'}
+          sx={{ borderRadius: 1, marginTop: 2, width: '100%' }}
+        />
+      )}
       <Divider sx={{ marginY: 2 }}>
         <Chip label='OR' size='small' />
       </Divider>
