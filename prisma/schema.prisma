@@ -18,6 +18,7 @@ model User {
   sessions      Session[]
   // Optional for WebAuthn support
   Authenticator Authenticator[]
+  UploadedFiles UploadedFiles[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,4 +80,17 @@ model PasswordResetToken {
   expires DateTime
 
   @@unique([email, token])
+}
+
+model UploadedFiles {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  email     String
+  url       String
+  fileType  String
+  fileName  String
+  fileSize  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  User      User     @relation(fields: [userId], references: [id])
 }
