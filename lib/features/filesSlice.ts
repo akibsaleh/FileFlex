@@ -20,15 +20,7 @@ const filesSlice = createSlice({
   },
   reducers: {
     addFiles: (state, action) => {
-      if (state.files.length === 0) {
-        state.files = [...state.files, action.payload];
-      } else {
-        if (
-          state.files.findIndex((item) => item.id === action.payload.id) === -1
-        ) {
-          state.files = [...state.files, action.payload];
-        }
-      }
+      state.files = [...state.files, ...action.payload];
     },
     updateFile: (state, action) => {
       const existingFileIndex = state.files.findIndex(

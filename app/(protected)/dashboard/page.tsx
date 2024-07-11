@@ -11,6 +11,7 @@ export default async function page() {
     createdAt: file.createdAt.toISOString(),
     updatedAt: file.updatedAt.toISOString(),
   }));
+
   return (
     <Box
       component='main'
@@ -21,7 +22,7 @@ export default async function page() {
     >
       <Header color='primary' elevation={1} />
       <Container maxWidth='xl' component='section'>
-        <Box>
+        <Box py={3}>
           <FileUploader />
           <Typography>{!files.status && files.message}</Typography>
           <FileList files={files.status ? serializedFiles : []} />
