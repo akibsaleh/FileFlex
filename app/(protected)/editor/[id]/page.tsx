@@ -28,7 +28,12 @@ const page = async ({ params }: { params: { id: string } }) => {
             <Alert severity='error'>{file.message}</Alert>
           </Box>
         )}
-        <KonvaStage />
+        <KonvaStage
+          fileName={
+            file.data?.fileType === 'image' ? file.data.fileName : 'newFile.png'
+          }
+          imageUrl={file.data?.fileType === 'image' ? file.data.url : undefined}
+        />
       </Box>
     </Box>
   );

@@ -3,6 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider } from '@mui/material/styles';
 import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin';
 import '@uploadthing/react/styles.css';
+import 'material-symbols';
 import type { Metadata } from 'next';
 import { SessionProvider } from 'next-auth/react';
 import { Inter } from 'next/font/google';
@@ -12,6 +13,7 @@ import ClientCacheProvider from './ClientCacheProvider';
 import './globals.css';
 
 import { ourFileRouter } from '@/app/api/uploadthing/core';
+import Footer from '../components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -36,6 +38,7 @@ export default function RootLayout({
                 routerConfig={extractRouterConfig(ourFileRouter)}
               />
               {children}
+              <Footer />
             </SessionProvider>
           </ThemeProvider>
         </ClientCacheProvider>
