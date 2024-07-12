@@ -29,3 +29,7 @@ npm install
 ```sh
 npm run dev
 ```
+
+## Test User
+user: akib@saleh.com
+password: 0!6Vesper
