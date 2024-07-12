@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import { Alert, Box, Container } from '@mui/material';
 import getSingleFile from '../../../../actions/getSingleFile.action';
 import ImagePreview from '../../../../components/FileManagement/ImagePreview';
+import PdfPreview from '../../../../components/FileManagement/PdfPreview';
 
 export default async function page({ params }: { params: { id: string } }) {
   const file = await getSingleFile(params.id);
@@ -29,6 +30,9 @@ export default async function page({ params }: { params: { id: string } }) {
         )}
         {file.data?.fileType === 'image' && (
           <ImagePreview url={file.data.url} fileName={file.data.fileName} />
+        )}
+        {file.data?.fileType === 'pdf' && (
+          <PdfPreview url={file.data.url} fileName={file.data.fileName} />
         )}
       </Container>
     </Box>

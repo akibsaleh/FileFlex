@@ -1,32 +1,61 @@
 'use client';
-import { ZoomIn, ZoomOut } from '@mui/icons-material';
+import { RotateLeft, ZoomIn, ZoomOut } from '@mui/icons-material';
 import { Box, IconButton, Paper } from '@mui/material';
 import Image from 'next/image';
 import React from 'react';
+import {
+  TransformComponent,
+  TransformWrapper,
+  useControls,
+} from 'react-zoom-pan-pinch';
+
+const Controls = () => {
+  const { zoomIn, zoomOut, resetTransform } = useControls();
+  return (
+    <Box
+      display='flex'
+      alignItems='center'
+      gap={0.5}
+      zIndex={100}
+      sx={{ position: 'absolute', top: 10, left: 10 }}
+    >
+      <IconButton
+        color='secondary'
+        sx={{ backgroundColor: '#00000070' }}
+        size='small'
+        onClick={() => zoomIn()}
+      >
+        <ZoomIn fontSize='small'></ZoomIn>
+      </IconButton>
+      <IconButton
+        color='secondary'
+        sx={{ backgroundColor: '#00000070' }}
+        size='small'
+        onClick={() => zoomOut()}
+      >
+        <ZoomOut fontSize='small'></ZoomOut>
+      </IconButton>
+      <IconButton
+        color='secondary'
+        sx={{ backgroundColor: '#00000070' }}
+        size='small'
+        onClick={() => resetTransform()}
+      >
+        <RotateLeft fontSize='small'></RotateLeft>
+      </IconButton>
+    </Box>
+  );
+};
 
 const ImagePreview = ({ url, fileName }: { url: string; fileName: string }) => {
+  const [loading, setLoading] = React.useState(true);
   const [imageSize, setImageSize] = React.useState<{
     width: number;
     height: number;
   }>({
-    width: 600,
-    height: 600,
+    width: 1000,
+    height: 1000,
   });
-  const [scale, setScale] = React.useState<number>(1);
-  const [position, setPosition] = React.useState<{ x: number; y: number }>({
-    x: 0,
-    y: 0,
-  });
-
-  const imageRef = React.useRef(null);
-
-  const handleZoomIn = () => {
-    setScale((scale) => scale + 0.1);
-  };
-
-  const handleZoomOut = () => {
-    setScale((scale) => (scale > 1 ? scale - 0.1 : scale));
-  };
 
   return (
     <Box
@@ -38,48 +67,57 @@ const ImagePreview = ({ url, fileName }: { url: string; fileName: string }) => {
     >
       <Paper
         sx={{
-          height: 'fit-content',
-          width: 'fit-content',
           overflow: 'hidden',
           borderRadius: 1,
           border: '2px solid #e3e3e3',
           position: 'relative',
+          maxWidth: '100%',
+          width: imageSize.width,
+          height: imageSize.height,
+          visibility: !loading ? 'visible' : 'hidden',
         }}
         elevation={2}
       >
+        <TransformWrapper initialScale={1}>
+          <Controls />
+          <TransformComponent>
+            <Image
+              src={url}
+              width={imageSize.width}
+              height={imageSize.height}
+              alt={fileName}
+              onLoad={({ target }) => {
+                const { naturalWidth, naturalHeight } =
+                  target as HTMLImageElement;
+                setLoading(false);
+                setImageSize({ width: naturalWidth, height: naturalHeight });
+              }}
+              style={{
+                width: 'auto',
+                height: 'auto',
+              }}
+              className='duration-200'
+              priority
+            />
+          </TransformComponent>
+        </TransformWrapper>
         <Image
           src={url}
           width={imageSize.width}
           height={imageSize.height}
           alt={fileName}
-          onLoadingComplete={({ naturalWidth, naturalHeight }) =>
-            setImageSize({ width: naturalWidth, height: naturalHeight })
-          }
-          style={{ cursor: scale > 1 ? 'move' : 'auto' }}
+          onLoad={({ target }) => {
+            const { naturalWidth, naturalHeight } = target as HTMLImageElement;
+            setLoading(false);
+            setImageSize({ width: naturalWidth, height: naturalHeight });
+          }}
+          style={{
+            width: 'auto',
+            height: 'auto',
+          }}
+          className='duration-200'
+          priority
         />
-        <Box
-          display='flex'
-          alignItems='center'
-          gap={0.5}
-          sx={{ position: 'absolute', bottom: 10, left: 10 }}
-        >
-          <IconButton
-            color='secondary'
-            sx={{ backgroundColor: '#00000070' }}
-            size='small'
-            onClick={handleZoomIn}
-          >
-            <ZoomIn fontSize='small'></ZoomIn>
-          </IconButton>
-          <IconButton
-            color='secondary'
-            sx={{ backgroundColor: '#00000070' }}
-            size='small'
-            onClick={handleZoomOut}
-          >
-            <ZoomOut fontSize='small'></ZoomOut>
-          </IconButton>
-        </Box>
       </Paper>
     </Box>
   );
